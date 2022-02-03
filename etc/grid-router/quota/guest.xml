@@ -1,0 +1,10 @@
+<qa:browsers xmlns:qa="urn:config.gridrouter.qatools.ru">
+    <browser name="chrome" defaultVersion="95.0">
+        <version number="95.0">
+            <region name="cluster">
+                <host name="selenoidone" port="4444" count="10"></host>
+                <host name="selenoidtwo" port="4444" count="10"></host>
+            </region>
+        </version>
+    </browser>
+</qa:browsers>

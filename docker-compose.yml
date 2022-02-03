@@ -1,0 +1,59 @@
+version: '3'
+services:
+
+  selenoidone:
+    image: "aerokube/selenoid"
+    networks:
+      - selenoid-network
+    ports:
+      - "5555:4444"
+    volumes:
+      - "$PWD:/etc/selenoid/"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: ["-limit", "10","-service-startup-timeout" ,"30s","-container-network","selenoid-network"]
+    
+  selenoidtwo:
+    image: "aerokube/selenoid:latest-release"
+    networks:
+      - selenoid-network
+    ports:
+      - "6666:4444"
+    volumes:
+      - "$PWD:/etc/selenoid/"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: ["-limit", "10","-service-startup-timeout" ,"30s","-container-network","selenoid-network"]
+         
+  selenoid-ui:
+    image: "aerokube/selenoid-ui:latest-release"
+    networks:
+      - selenoid-network
+    ports:
+      - "8080:8080"
+    command: ["--webdriver-uri", "http://ggr:4444","--status-uri", "http://ggr-ui:8888"]
+    
+  ggr:
+    image: aerokube/ggr:latest-release
+    networks:
+      - selenoid-network
+    links:
+      - ggr-ui
+    ports:
+      - "4444:4444"
+    volumes:
+      - "./etc/grid-router/:/etc/grid-router:ro"
+    command: ["-guests-allowed"]
+    
+  ggr-ui:
+    image: aerokube/ggr-ui:latest-release
+    networks:
+      - selenoid-network
+    ports:
+      - "8888:8888"
+    volumes:
+      - "./etc/grid-router/:/etc/grid-router:ro"  
+      
+networks:
+  selenoid-network:
+    name: selenoid-network
+    driver: bridge
+    
